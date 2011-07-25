@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 from sys import argv
 from httplib import HTTPConnection
@@ -8,15 +8,15 @@ import json
 def main(args):
     for arg in args:
         print "Looking up domains for %s..." % arg
-        
+
         con = HTTPConnection('domai.nr')
         req = con.request('GET', '/api/json/search?q=%s' % arg)
         res = con.getresponse()
-        
+
         if res.status == 200:
             data = res.read()
             sites = json.loads(data)
-            
+
             for s in sites['results']:
                 print "\t%s - %s" % (s['domain'], s['availability'])
         else:
