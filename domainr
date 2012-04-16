@@ -3,7 +3,7 @@
 from sys import argv
 from httplib import HTTPConnection
 
-import json
+import json, webbrowser
 
 colors = {
   'green':  '\033[92m',
@@ -19,24 +19,59 @@ status_color = {
   'unavailable':  colors['red']
 }
 
+def checkAvailability(domain):
+
+    con = HTTPConnection('domai.nr')
+    req = con.request('GET', '/api/json/info?q=%s' % domain)
+    res = con.getresponse()
+
+    if res.status == 200:
+        data = json.loads( res.read() )
+        availability = data['availability']
+        return availability
+
+    else:
+        print "Uh oh, you got a %s %s. What the dilly?" % (res.status, res.reason)
+
+def registerDomain(domain):
+    webbrowser.open_new_tab("http://domai.nr/" + domain + "/register")
+
+
 def main(args):
-    for arg in args:
-        print "Looking up domains for %s..." % arg
-        
-        con = HTTPConnection('domai.nr')
-        req = con.request('GET', '/api/json/search?q=%s' % arg)
-        res = con.getresponse()
-        
-        if res.status == 200:
-            data = res.read()
-            sites = json.loads(data)
-            
-            for s in sites['results']:
-                status = "%s%s - %s" % (s['domain'], s['path'], s['availability'])
-                print "\t" + status_color.get(s['availability'], '') + status + colors['endc']
+
+
+    if args[0] == "register":
+
+        domain = args[1]
+        if "." in domain:
+
+            availability = checkAvailability(domain)
+
+            if availability == "available":
+                registerDomain(domain)
+            else:
+                print "Sorry, %s isn't available =(" % domain
+
         else:
-            print "Uh oh, you got a %s %s. What the dilly?" % (res.status, res.reason)
+            print "You can only register domains with a '.', and it looks like \"%s\" doesn't have one =(" % domain
+
+    else:
+        for arg in args:
+            print "Looking up domains for %s..." % arg
+            
+            con = HTTPConnection('domai.nr')
+            req = con.request('GET', '/api/json/search?q=%s' % arg)
+            res = con.getresponse()
+            
+            if res.status == 200:
+                data = res.read()
+                sites = json.loads(data)
+                
+                for s in sites['results']:
+                    status = "%s%s - %s" % (s['domain'], s['path'], s['availability'])
+                    print "\t" + status_color.get(s['availability'], '') + status + colors['endc']
+            else:
+                print "Uh oh, you got a %s %s. What the dilly?" % (res.status, res.reason)
 
 if __name__ == "__main__":
     main(argv[1:])
-
