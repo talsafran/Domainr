@@ -93,4 +93,14 @@ It even works with multiple domains.
         sh - tld
 ```
 
+And, you can even register a domain from the CLI. Running something like:
+
+```bash
+
+    $ domainr register omgilovegithub.com
+
+```
+
+Will bring up a new tab in your default browser (if the domain is available), to register the domain!
+
 -- [@talsafran](http://twitter.com/talsafran)
