@@ -3,7 +3,7 @@
 from sys import argv
 from httplib import HTTPConnection
 
-import json, webbrowser, tempfile, os, commands, pprint, ast
+import json, webbrowser, os, commands, pprint, ast
 
 colors = {
   'green':  '\033[92m',
