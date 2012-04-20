@@ -4,12 +4,12 @@ Disclaimer: This is one of the first things I've written in Python. So be gentle
     $ domainr talsafran
     Looking up domains for talsafran...
         talsafran.com - taken
-        talsafran.net - available
-        talsafran.org - available
-        talsafr.an - available
-        talsa.fr - available
-        tals.af - available
-        tal.sa - available
+        talsafran.net - available [1]
+        talsafran.org - available [2]
+        talsafr.an - available [3]
+        talsa.fr - available [4]
+        tals.af - available [5]
+        tal.sa - available [6]
         ta.ls - unavailable
         tls.fr - taken
         t.al - unavailable
