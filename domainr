@@ -64,30 +64,28 @@ def main(args):
         os.makedirs( path_to_check_for ) # make the $path_to_bin/_domainr/ directory
 
   # if the first argument is 'register'
-    if args[0] == "register" and len(args) == 2:
+    if args[0] == "register" and len(args) == 2 and args[1].isdigit():
 
-        if args[1].isdigit(): # just dbl-check it's a digit. If not, we can't process it.
 
-          # make sure this is an int - otherwise, dictionary won't be happy
-          index_to_register = int(args[1])
 
-          # grab the file contents
-          external_available_domains = open( path_to_check_for + "/" + log_file_name ).read()
+        # make sure this is an int - otherwise, dictionary won't be happy
+        index_to_register = int(args[1])
 
-          # convert the string to a dict
-          available_domain_data = ast.literal_eval("%s" % external_available_domains )
+        # grab the file contents
+        external_available_domains = open( path_to_check_for + "/" + log_file_name ).read()
 
-          # the dict should be in string format, not unicode
-          new_dict = convert_keys_to_string(available_domain_data)
+        # convert the string to a dict
+        available_domain_data = ast.literal_eval("%s" % external_available_domains )
 
-          if index_to_register <= len(new_dict):
-              registerDomain(available_domain_data[index_to_register])
+        # the dict should be in string format, not unicode
+        new_dict = convert_keys_to_string(available_domain_data)
 
-          else:
-              print "Whoah, something went wrong there. Please try again, using the digit that corresponds with the domain you want. Here are your options:"
-              pprint.pprint(available_domain_data)
+        if index_to_register <= len(new_dict):
+            registerDomain(available_domain_data[index_to_register])
+
         else:
-            print "Oh no! Sorry, please pass in the corresponding digit to register an available domain name."
+            print "Whoah, something went wrong there. Please try again, using the digit that corresponds with the domain you want. Here are your options:"
+            pprint.pprint(available_domain_data)
 
     else:
 
