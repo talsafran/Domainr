@@ -43,7 +43,6 @@ def convert_keys_to_string(dictionary):
     return dict((str(k), convert_keys_to_string(v))
         for k, v in dictionary.items())
 
-
 def main(args):
 
     # see where the domainr executable is (the path)
@@ -139,11 +138,24 @@ def main(args):
                     # hooray! we get to keep a log of the previous-searched domains & their availability!
                     log = open(path_to_check_for + "/" + log_file_name, 'a')
 
-                    if index == 0:
+
+
+                    # if it's the first site they passed in
+                    if index == 0 and len(args) == 1:
+                        log.write(json_available_domains)
+
+                    elif index == 0:
                         available_domains_missing_right_bracket = json_available_domains.rsplit("}", 1)
                         log.write( available_domains_missing_right_bracket[0] ) # remove the final } so we can append other k/v pairs to it
 
-                    elif index < len(args):
+                    elif index + 1 < len(args):
+                        log.write(", ") # separate these objects by a comma
+
+                        # remove both brackets
+                        available_domains_missing_left_bracket = json_available_domains.split("{", 1)
+                        available_domains_no_brackets = available_domains_missing_left_bracket[1].rsplit("}", 1)
+                        log.write( available_domains_no_brackets[0] )
+                    else:
                         log.write(", ") # separate these objects by a comma
 
                         # remove both brackets
@@ -151,11 +163,7 @@ def main(args):
                         available_domains_no_brackets = available_domains_missing_left_bracket[1].rsplit("}", 1)
                         log.write( available_domains_no_brackets[0] )
 
-                    else:
-                        log.write(", ") # separate these objects by a comma
-                        available_domains_missing_left_bracket = json_available_domains.split("{", 1)
-                        log.write( available_domains_missing_left_bracket[1] ) # remove the first { so we can append it to the k/v
-                    log.write("}")
+                        log.write("}")
                     log.close()
 
 
