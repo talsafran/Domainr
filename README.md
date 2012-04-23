@@ -4,12 +4,12 @@ Disclaimer: This is one of the first things I've written in Python. So be gentle
     $ domainr talsafran
     Looking up domains for talsafran...
         talsafran.com - taken
-        talsafran.net - available
-        talsafran.org - available
-        talsafr.an - available
-        talsa.fr - available
-        tals.af - available
-        tal.sa - available
+        talsafran.net - available [1]
+        talsafran.org - available [2]
+        talsafr.an - available [3]
+        talsa.fr - available [4]
+        tals.af - available [5]
+        tal.sa - available [6]
         ta.ls - unavailable
         tls.fr - taken
         t.al - unavailable
@@ -44,12 +44,12 @@ Very simple. Just type in ``domainr`` and the name of the site you're looking fo
     $ domainr talsafran
     Looking up domains for talsafran...
         talsafran.com - taken
-        talsafran.net - available
-        talsafran.org - available
-        talsafr.an - available
-        talsa.fr - available
-        tals.af - available
-        tal.sa - available
+        talsafran.net - available [1]
+        talsafran.org - available [2]
+        talsafr.an - available [3]
+        talsa.fr - available [4]
+        tals.af - available [5]
+        tal.sa - available [6]
         ta.ls - unavailable
         tls.fr - taken
         t.al - unavailable
@@ -63,34 +63,44 @@ It even works with multiple domains.
     $ domainr talsafran sharonsafran
     Looking up domains for talsafran...
         talsafran.com - taken
-        talsafran.net - available
-        talsafran.org - available
-        talsafr.an - available
-        talsa.fr - available
-        tals.af - available
-        tal.sa - available
+        talsafran.net - available [1]
+        talsafran.org - available [2]
+        talsafr.an - available [3]
+        talsa.fr - available [4]
+        tals.af - available [5]
+        tal.sa - available [6]
         ta.ls - unavailable
         tls.fr - taken
         t.al - unavailable
         t.ls - unavailable
         tl - tld
     Looking up domains for sharonsafran...
-        sharonsafran.com - available
-        sharonsafran.net - available
-        sharonsafran.org - available
-        sharonsafr.an - available
-        sharonsa.fr - available
-        sharons.af - available
-        sharon.sa - available
-        sha.ro - available
-        shrns.fr - available
-        shar.nsafr.an - available
+        sharonsafran.com - available [7]
+        sharonsafran.net - available [8]
+        sharonsafran.org - available [9]
+        sharonsafr.an - available [10]
+        sharonsa.fr - available [11]
+        sharons.af - available [12]
+        sharon.sa - available [13]
+        sha.ro - available [14]
+        shrns.fr - available [15]
+        shar.nsafr.an - available [16]
         shar.nsa.fr - taken
         shar.ns.af - taken
-        shar.n.sa - available
+        shar.n.sa - available [17]
         sh.ar - unavailable
-        s.hr - available
+        s.hr - available [18]
         sh - tld
 ```
+
+And, you can even register a domain from the CLI. All you have to do is pass in the number associated with the **available** domain. So, you'd be running something like:
+
+```bash
+
+    $ domainr register 3
+
+```
+
+Will bring up a new tab in your default browser (if the domain is available), to register the domain!
 
 -- [@talsafran](http://twitter.com/talsafran)
