@@ -6,164 +6,161 @@ from httplib import HTTPConnection
 import json, webbrowser, os, commands, pprint, ast
 
 colors = {
-  'green':  '\033[92m',
-  'yellow': '\033[93m',
-  'red':    '\033[91m',
-  'endc':   '\033[0m'
+    'green':  '\033[92m',
+    'yellow': '\033[93m',
+    'red':    '\033[91m',
+    'endc':   '\033[0m'
 }
 
 status_color = {
-  'available':    colors['green'],
-  'maybe':        colors['yellow'],
-  'taken':        colors['red'],
-  'unavailable':  colors['red']
+    'available':    colors['green'],
+    'maybe':        colors['yellow'],
+    'taken':        colors['red'],
+    'unavailable':  colors['red']
 }
 
 def checkAvailability(domain):
 
-  con = HTTPConnection('domai.nr')
-  req = con.request('GET', '/api/json/info?q=%s' % domain)
-  res = con.getresponse()
+    con = HTTPConnection('domai.nr')
+    req = con.request('GET', '/api/json/info?q=%s' % domain)
+    res = con.getresponse()
 
-  if res.status == 200:
-    data = json.loads( res.read() )
-    availability = data['availability']
-    return availability
+    if res.status == 200:
+        data = json.loads( res.read() )
+        availability = data['availability']
+        return availability
 
-  else:
-    print "Uh oh, you got a %s %s. What the dilly?" % (res.status, res.reason)
+    else:
+        print "Uh oh, you got a %s %s. What the dilly?" % (res.status, res.reason)
 
 def registerDomain(domain):
-  webbrowser.open_new_tab("http://domai.nr/" + domain + "/register")
+    webbrowser.open_new_tab("http://domai.nr/" + domain + "/register")
 
 def convert_keys_to_string(dictionary):
-  """Recursively converts dictionary keys to strings."""
-  if not isinstance(dictionary, dict):
-    return dictionary
-  return dict((str(k), convert_keys_to_string(v))
-    for k, v in dictionary.items())
+    """Recursively converts dictionary keys to strings."""
+    if not isinstance(dictionary, dict):
+        return dictionary
+    return dict((str(k), convert_keys_to_string(v))
+        for k, v in dictionary.items())
 
 
 def main(args):
 
-  # see where the domainr executable is (the path)
-  status, domainr_path = commands.getstatusoutput("which domainr")  # ex: "/usr/local/bin/domainr"
+    # see where the domainr executable is (the path)
+    status, domainr_path = commands.getstatusoutput("which domainr")  # ex: "/usr/local/bin/domainr"
 
-  # split that, so we get the parent of it
-  path_to_bin = domainr_path.rsplit('/', 1)  # ex: ["/usr/local/bin", "domainr"]
+    # split that, so we get the parent of it
+    path_to_bin = domainr_path.rsplit('/', 1)  # ex: ["/usr/local/bin", "domainr"]
 
-  # what our folder & file will be named
-  log_file_dir_name = "_domainr"
-  log_file_name = "logs.txt"
+    # what our folder & file will be named
+    log_file_dir_name = "_domainr"
+    log_file_name = "logs.txt"
 
-  # the path we need to check for
-  path_to_check_for = path_to_bin[0] + "/" + log_file_dir_name
+    # the path we need to check for
+    path_to_check_for = path_to_bin[0] + "/" + log_file_dir_name
 
 
-  # see if the user doesn't already has `_domainr` in their $path_to_bin
-  if not os.path.exists( path_to_check_for ):
-    os.makedirs( path_to_check_for ) # make the $path_to_bin/_domainr/ directory
+    # see if the user doesn't already has `_domainr` in their $path_to_bin
+    if not os.path.exists( path_to_check_for ):
+        os.makedirs( path_to_check_for ) # make the $path_to_bin/_domainr/ directory
 
   # if the first argument is 'register'
-  if args[0] == "register":
+    if args[0] == "register" and len(args) == 2:
 
-    # uh oh - they didn't pass in the index to register! whatttttt?
-    if len(args) < 2:
-      print "Oh noes! Looks like you didn't pass in a domain to register. Do so like this:\n\t$ domainr register x\n...where x is the number in [ ]. For example:\n\t$ domainr register 4"
+        if args[1].isdigit(): # just dbl-check it's a digit. If not, we can't process it.
 
-    else:
-      if args[1].isdigit(): # just dbl-check it's a digit. If not, we can't process it.
+          # make sure this is an int - otherwise, dictionary won't be happy
+          index_to_register = int(args[1])
 
-        # make sure this is an int - otherwise, dictionary won't be happy
-        index_to_register = int(args[1])
+          # grab the file contents
+          external_available_domains = open( path_to_check_for + "/" + log_file_name ).read()
 
-        # grab the file contents
-        external_available_domains = open( path_to_check_for + "/" + log_file_name ).read()
+          # convert the string to a dict
+          available_domain_data = ast.literal_eval("%s" % external_available_domains )
 
-        # convert the string to a dict
-        available_domain_data = ast.literal_eval("%s" % external_available_domains )
+          # the dict should be in string format, not unicode
+          new_dict = convert_keys_to_string(available_domain_data)
 
-        # the dict should be in string format, not unicode
-        convert_keys_to_string(available_domain_data)
-
-        if available_domain_data[index_to_register]:
-          registerDomain(available_domain_data[index_to_register])
-
-        else:
-          print "Whoah, something went wrong there. Please try again, using the digit that corresponds with the domain you want. Here are your options:"
-          pprint.pprint(available_domain_data)
-      else:
-        print "Oh no! Sorry, please pass in the corresponding digit to register an available domain name."
-
-  else:
-
-    # erase the old file here, and immediately close it so it's fresh for appending the domains to
-    log = open(path_to_check_for + "/" + log_file_name, 'w')
-    log.write('')
-    log.close()
-
-    for index, arg in enumerate(args):
-
-      available_domains = {}
-
-      print "Looking up domains for %s..." % arg
-
-      con = HTTPConnection('domai.nr')
-      req = con.request('GET', '/api/json/search?q=%s' % arg)
-      res = con.getresponse()
-
-      if res.status == 200:
-        data = res.read()
-        sites = json.loads(data)
-
-        if index == 0:
-            availability_count = 1
-
-        for s in sites['results']:
-          status = "%s%s - %s" % (s['domain'], s['path'], s['availability'])
-
-          # if the domain is available
-          if s['availability'] == "available":
-
-            # output the index of availability
-            status += " [" + str(availability_count) + "]"
-
-            # tack it on to the available_domains dict
-            available_domains[availability_count] = s['domain']
-
-            availability_count += 1
-          print "\t" + status_color.get(s['availability'], '') + status + colors['endc']
-
-        # if there are actually any domains available...
-        if availability_count > 1:
-
-          # convert the dict to a string
-          json_available_domains = str(available_domains)
-
-          # hooray! we get to keep a log of the previous-searched domains & their availability!
-          log = open(path_to_check_for + "/" + log_file_name, 'a')
-
-          if index == 0:
-            available_domains_missing_right_bracket = json_available_domains.rsplit("}", 1)
-            log.write( available_domains_missing_right_bracket[0] ) # remove the final } so we can append other k/v pairs to it
-
-          elif (index + 1) < len(args):
-            log.write(", ") # separate these objects by a comma
-
-            # remove both brackets
-            available_domains_missing_left_bracket = json_available_domains.split("{", 1)
-            available_domains_no_brackets = available_domains_missing_left_bracket[1].rsplit("}", 1)
-            log.write( available_domains_no_brackets[0] )
+          if index_to_register <= len(new_dict):
+              registerDomain(available_domain_data[index_to_register])
 
           else:
-            log.write(", ") # separate these objects by a comma
-            available_domains_missing_left_bracket = json_available_domains.split("{", 1)
-            log.write( available_domains_missing_left_bracket[1] ) # remove the first { so we can append it to the k/v
-          log.close()
+              print "Whoah, something went wrong there. Please try again, using the digit that corresponds with the domain you want. Here are your options:"
+              pprint.pprint(available_domain_data)
+        else:
+            print "Oh no! Sorry, please pass in the corresponding digit to register an available domain name."
+
+    else:
+
+        # erase the old file here, and immediately close it so it's fresh for appending the domains to
+        log = open(path_to_check_for + "/" + log_file_name, 'w')
+        log.write('')
+        log.close()
+
+        for index, arg in enumerate(args):
+
+            available_domains = {}
+
+            print "Looking up domains for %s..." % arg
+
+            con = HTTPConnection('domai.nr')
+            req = con.request('GET', '/api/json/search?q=%s' % arg)
+            res = con.getresponse()
+
+            if res.status == 200:
+                data = res.read()
+                sites = json.loads(data)
+
+                if index == 0:
+                    availability_count = 1
+
+                for s in sites['results']:
+                    status = "%s%s - %s" % (s['domain'], s['path'], s['availability'])
+
+                    # if the domain is available
+                    if s['availability'] == "available":
+
+                        # output the index of availability
+                        status += " [" + str(availability_count) + "]"
+
+                        # tack it on to the available_domains dict
+                        available_domains[availability_count] = s['domain']
+
+                        availability_count += 1
+
+                    print "\t" + status_color.get(s['availability'], '') + status + colors['endc']
+
+                # if there are actually any domains available...
+                if availability_count > 1:
+
+                    # convert the dict to a string
+                    json_available_domains = str(available_domains)
+
+                    # hooray! we get to keep a log of the previous-searched domains & their availability!
+                    log = open(path_to_check_for + "/" + log_file_name, 'a')
+
+                    if index == 0:
+                        available_domains_missing_right_bracket = json_available_domains.rsplit("}", 1)
+                        log.write( available_domains_missing_right_bracket[0] ) # remove the final } so we can append other k/v pairs to it
+
+                    elif index < len(args):
+                        log.write(", ") # separate these objects by a comma
+
+                        # remove both brackets
+                        available_domains_missing_left_bracket = json_available_domains.split("{", 1)
+                        available_domains_no_brackets = available_domains_missing_left_bracket[1].rsplit("}", 1)
+                        log.write( available_domains_no_brackets[0] )
+
+                    else:
+                        log.write(", ") # separate these objects by a comma
+                        available_domains_missing_left_bracket = json_available_domains.split("{", 1)
+                        log.write( available_domains_missing_left_bracket[1] ) # remove the first { so we can append it to the k/v
+                    log.write("}")
+                    log.close()
 
 
-      else:
-        print "Uh oh, you got a %s %s. What the dilly?" % (res.status, res.reason)
+            else:
+                print "Uh oh, you got a %s %s. What the dilly?" % (res.status, res.reason)
 
 if __name__ == "__main__":
     main(argv[1:])
