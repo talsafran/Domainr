@@ -1,21 +1,6 @@
 Disclaimer: This is one of the first things I've written in Python. So be gentle. Recovering Rubyist here :)
 
-```bash
-    $ domainr talsafran
-    Looking up domains for talsafran...
-        talsafran.com - taken
-        talsafran.net - available [1]
-        talsafran.org - available [2]
-        talsafr.an - available [3]
-        talsa.fr - available [4]
-        tals.af - available [5]
-        tal.sa - available [6]
-        ta.ls - unavailable
-        tls.fr - taken
-        t.al - unavailable
-        t.ls - unavailable
-        tl - tld
-```
+![an example](http://f.cl.ly/items/2S3C261y2g0p2y2Z2c0W/Screen%20Shot%202012-06-16%20at%2010.32.31%20AM.png)
 
 ## Domainr Command Line Interface
 If you're like me, you love the website [Domai.nr](http://domai.nr). You type in a name you have in mind for a domain and it spits back as many clever domain possibilities as it can find, including domain hacks. That's badass.
@@ -103,4 +88,4 @@ And, you can even register a domain from the CLI. All you have to do is pass in 
 
 Will bring up a new tab in your default browser (if the domain is available), to register the domain!
 
--- [@talsafran](http://twitter.com/talsafran)
+-- [@talsafran](http://twitter.com/talsafran) and [@connor](http://twitter.com/connor)
